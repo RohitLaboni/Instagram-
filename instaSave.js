@@ -46,7 +46,20 @@ async function instaSave(url) {
       const mapped = mapIgdlResult(data);
 
       if (mapped && (mapped.MP4 || mapped.JPEG)) {
-        return mapped;
+        return {
+          success: true,
+          media: [
+            {
+              type: mapped.MP4 ? 'video' : 'image',
+              url: mapped.MP4 || mapped.JPEG
+            }
+          ],
+          description: mapped.description,
+          profileName: mapped.profileName,
+          likes: mapped.likes,
+          comments: mapped.comments,
+          timeAgo: mapped.timeAgo
+        };
       }
     } catch (err) {
       console.warn('igdl failed:', err.message);
