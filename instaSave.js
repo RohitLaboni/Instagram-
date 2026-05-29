@@ -6,7 +6,7 @@ let igdl = null;
 try {
   igdl = require('ab-downloader').igdl;
 } catch (e) {
-  // fallback থাকবে
+  // fallback
 }
 
 function mapIgdlResult(d) {
@@ -59,7 +59,7 @@ function mapIgdlResult(d) {
 
 async function instaSave(url) {
 
-  // ✅ 1. Try igdl first
+  // Try igdl first
   if (igdl) {
     try {
       const data = await igdl(url);
@@ -75,7 +75,7 @@ async function instaSave(url) {
     }
   }
 
-  // ✅ 2. Fallback scraper
+  // Fallback scraper
   const endpoint = 'https://insta-save.net/content.php';
 
   let resp;
@@ -164,7 +164,7 @@ async function instaSave(url) {
       null;
   }
 
-  // ✅ URL validation
+  // URL validation
   if (jpg && !jpg.startsWith('http')) {
     jpg = null;
   }
@@ -173,7 +173,7 @@ async function instaSave(url) {
     mp4 = null;
   }
 
-  // ✅ Multiple media support
+  // Multiple media support
   const media = [];
 
   $('#download_content img').each((i, img) => {
