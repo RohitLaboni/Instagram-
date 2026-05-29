@@ -3,6 +3,8 @@ const { Telegraf } = require('telegraf');
 const axios = require('axios');
 const path = require('path');
 
+require('dotenv').config();
+
 const instaSave = require('./instaSave'); // your scraper module (the function you provided)
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
