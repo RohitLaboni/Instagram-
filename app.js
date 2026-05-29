@@ -16,7 +16,7 @@ const bot = new Telegraf(BOT_TOKEN);
 // Helper: extract first URL from text
 function extractUrl(text) {
 if (!text) return null;
-const urlRe = /(https?://(?:www.)?instagram.com/[^\s]+)/i;
+const urlRe = /(https?:\/\/(?:www\.)?instagram\.com\/[^\s]+)/i;
 const match = text.match(urlRe);
 return match ? match[1].split('?')[0] : null; // strip query for cleanliness
 }
@@ -32,7 +32,7 @@ const headers = { 'User-Agent': 'Mozilla/5.0' };
 const resp = await axios.get(url, { responseType: 'stream', headers, validateStatus: null });
 
 if (resp.status < 200 || resp.status >= 300) {
-throw new Error(download failed: ${resp.status});
+throw new Error(`download failed: ${resp.status}`);
 }
 
 const contentLengthHeader = resp.headers['content-length'];
@@ -80,9 +80,11 @@ if (!url) {
 return; // ignore non-links to reduce noise
 }
 
-const user = ctx.from.username ? @${ctx.from.username} : ctx.from.first_name || 'user';
+const user = ctx.from.username
+  ? `@${ctx.from.username}`
+  : (ctx.from.first_name || 'user');
 try {
-await ctx.reply(🔎 ${user}, fetching data for: ${url});
+await ctx.reply(`🔎 ${user}, fetching data for: ${url}`);
 
 const data = await instaSave(url);  
 // expected: { JPEG, MP4, likes, comments, description, profileName, timeAgo }  
@@ -125,7 +127,9 @@ await ctx.reply(`I couldn't find a direct media file. Here is the link and any m
 
 } catch (err) {
 console.error('Handler error:', err);
-await ctx.reply(❌ Error: ${err.message || err}. If you keep getting errors, the scraper might be blocked or the post is private.);
+await ctx.reply(
+  `❌ Error: ${err.message || err}. If you keep getting errors, the scraper might be blocked or the post is private.`
+);
 }
 });
 
@@ -140,4 +144,3 @@ bot.launch();
 // Graceful stop
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
-Fix this
