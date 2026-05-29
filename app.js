@@ -7,15 +7,19 @@ require('dotenv').config();
 
 const instaSave = require('./instaSave');
 
-(async () => {
+async function test() {
   try {
-    const data = await instaSave('https://www.instagram.com/reel/test/');
+    const result = await instaSave(
+      'https://www.instagram.com/reel/CuXPxyz/'
+    );
 
-    console.log(data);
+    console.log(result);
   } catch (err) {
-    console.error(err);
+    console.error('ERROR:', err.message);
   }
-})();// // your scraper module (the function you provided)
+}
+
+test();// // your scraper module (the function you provided)
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
 if (!BOT_TOKEN) {
