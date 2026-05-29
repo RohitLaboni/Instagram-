@@ -149,4 +149,4 @@ timeAgo
 module.exports = instaSave;
 
 // Fix only error code
-Don't change any code
+/* Don't change any code */
