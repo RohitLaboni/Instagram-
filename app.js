@@ -5,7 +5,17 @@ const path = require('path');
 
 require('dotenv').config();
 
-const instaSave = require('./instaSave'); // your scraper module (the function you provided)
+const instaSave = require('./instaSave');
+
+(async () => {
+  try {
+    const data = await instaSave('https://www.instagram.com/reel/test/');
+
+    console.log(data);
+  } catch (err) {
+    console.error(err);
+  }
+})();// // your scraper module (the function you provided)
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
 if (!BOT_TOKEN) {
