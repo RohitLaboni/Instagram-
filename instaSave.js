@@ -149,7 +149,7 @@ async function instaSave(url) {
       null;
 
     mp4 =
-      el.find('a.btn.bg-gradient-success').attr('href') ||
+      el.find('a.btn.bg-gradient-success').attr('href') ||} else {
       el.find('a.download-video').attr('href') ||
       null;
 
