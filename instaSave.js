@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const axios = require('axios');
 const cheerio = require('cheerio');
 
@@ -6,29 +8,31 @@ let igdl = null;
 try {
   igdl = require('ab-downloader').igdl;
 } catch (e) {
-  // fallback
+  console.log('ab-downloader not found, using fallback scraper');
 }
 
 function mapIgdlResult(d) {
   if (!d) return null;
 
-  const item = Array.isArray(d) ? (d[0] || {}) : d;
+  const item = Array.isArray(d) ? d[0] || {} : d;
 
   const pickUrl = (...keys) => {
-    for (const k of keys) {
-      const v = item?.[k];
+    for (const key of keys) {
+      const value = item[key];
 
-      if (!v) continue;
+      if (!value) continue;
 
-      if (Array.isArray(v)) return v[0];
+      if (Array.isArray(value)) {
+        return value[0];
+      }
 
-      return v;
+      return value;
     }
 
     return null;
   };
 
-  const MP4 = pickUrl(
+  const mp4 = pickUrl(
     'MP4',
     'mp4',
     'video',
@@ -37,7 +41,7 @@ function mapIgdlResult(d) {
     'downloadUrl'
   );
 
-  const JPEG = pickUrl(
+  const jpg = pickUrl(
     'JPEG',
     'jpeg',
     'image',
@@ -47,29 +51,48 @@ function mapIgdlResult(d) {
   );
 
   return {
-    MP4,
-    JPEG,
-    description: item.description || item.caption || item.title || null,
-    profileName: item.profileName || item.username || item.author || null,
-    likes: item.likes || item.likeCount || null,
-    comments: item.comments || item.commentCount || null,
-    timeAgo: item.timeAgo || item.time || item.published || null
+    MP4: mp4,
+    JPEG: jpg,
+    description:
+      item.description ||
+      item.caption ||
+      item.title ||
+      null,
+
+    profileName:
+      item.profileName ||
+      item.username ||
+      item.author ||
+      null,
+
+    likes:
+      item.likes ||
+      item.likeCount ||
+      null,
+
+    comments:
+      item.comments ||
+      item.commentCount ||
+      null,
+
+    timeAgo:
+      item.timeAgo ||
+      item.time ||
+      item.published ||
+      null
   };
 }
 
 async function instaSave(url) {
-
   // Try igdl first
   if (igdl) {
     try {
       const data = await igdl(url);
-
       const mapped = mapIgdlResult(data);
 
       if (mapped && (mapped.MP4 || mapped.JPEG)) {
         return mapped;
       }
-
     } catch (err) {
       console.warn('igdl failed:', err.message);
     }
@@ -85,11 +108,10 @@ async function instaSave(url) {
       params: { url },
       headers: {
         'User-Agent': 'Mozilla/5.0',
-        'Referer': 'https://insta-save.net/'
+        Referer: 'https://insta-save.net/'
       },
       timeout: 10000
     });
-
   } catch (err) {
     throw new Error('Request failed: ' + err.message);
   }
@@ -121,7 +143,6 @@ async function instaSave(url) {
   let timeAgo = null;
 
   if (el.length) {
-
     jpg =
       el.find('img.load').attr('src') ||
       el.find('img').attr('src') ||
@@ -143,14 +164,12 @@ async function instaSave(url) {
     const stats = el
       .find('.stats small')
       .toArray()
-      .map(s => $(s).text().trim());
+      .map((s) => $(s).text().trim());
 
     likes = stats[0] || null;
     comments = stats[1] || null;
     timeAgo = stats[2] || null;
-
   } else {
-
     jpg =
       $('img').first().attr('src') ||
       null;
@@ -200,14 +219,15 @@ async function instaSave(url) {
 
   return {
     success: true,
-    media: media.length
-      ? media
-      : [
-          {
-            type: mp4 ? 'video' : 'image',
-            url: mp4 || jpg
-          }
-        ],
+    media:
+      media.length > 0
+        ? media
+        : [
+            {
+              type: mp4 ? 'video' : 'image',
+              url: mp4 || jpg
+            }
+          ],
     description,
     profileName,
     likes,
